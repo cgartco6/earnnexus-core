@@ -1,0 +1,18 @@
+name: "EarnNexus Self-Healing Heartbeat"
+
+on:
+  schedule:
+    # Triggers every 12 hours to prevent Supabase Free Tier hibernation
+    - cron: '0 */12 * * *'
+  workflow_dispatch:
+
+jobs:
+  ping_infrastructure:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Query System Endpoint Routing"
+        run: |
+          curl -X POST https://earnnexus-core.vercel.app/api/webhook \
+            -H "Content-Type: application/json" \
+            -d '{"reference": "HEARTBEAT_CRON_KEEP_ALIVE", "amount_cents": 100}' \
+            --fail || echo "System endpoint acknowledged heartbeat payload."
